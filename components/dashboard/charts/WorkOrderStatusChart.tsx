@@ -1,14 +1,8 @@
 "use client"
 
 import * as React from 'react'
-// @ts-ignore - Suppressing TypeScript errors for recharts imports
-import { 
-  PieChart, 
-  Pie, 
-  Cell, 
-  ResponsiveContainer, 
-  Tooltip 
-} from 'recharts'
+// Replacing recharts with Nivo pie chart
+import { ResponsivePie } from '@nivo/pie'
 
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card'
 import { getDashboardStats } from '@/lib/services/mockData'
@@ -17,9 +11,11 @@ import { exportToExcel } from '@/lib/utils'
 
 // Define type for chart data
 interface ChartData {
-  name: string;
+  id: string;       // Changed from 'name' to 'id' for Nivo
+  label: string;    // Added for Nivo
   value: number;
   color: string;
+  total: number;
 }
 
 // Colors for different status types - using standard color conventions - moved outside component
@@ -57,15 +53,34 @@ const WorkOrderStatusChart = () => {
         // In a real app, this would be an API call with filter parameters
         const stats = getDashboardStats()
         
-        // Filter data based on selected filter
-        // Note: In a real application, you'd filter the data on the server side
-        // or filter here based on the dates of the work orders
+        // Use totalWorkOrders as the base for percentages
+        const totalWorkOrders = stats.totalWorkOrders
         
         // Format data for pie chart with consistent color assignments
+        // Adjusted format for Nivo pie chart
         const chartData = [
-          { name: 'Completed', value: stats.completedWorkOrders, color: STATUS_COLORS.completed },
-          { name: 'In-Progress', value: stats.inProgressWorkOrders, color: STATUS_COLORS.inProgress },
-          { name: 'Not Started', value: stats.notStartedWorkOrders, color: STATUS_COLORS.notStarted }
+          { 
+            id: 'completed', 
+            label: 'Completed', 
+            value: stats.completedWorkOrders,
+            color: STATUS_COLORS.completed,
+            // Store the total for percentage calculations
+            total: totalWorkOrders
+          },
+          { 
+            id: 'in-progress', 
+            label: 'In-Progress', 
+            value: stats.inProgressWorkOrders, 
+            color: STATUS_COLORS.inProgress,
+            total: totalWorkOrders
+          },
+          { 
+            id: 'not-started', 
+            label: 'Not Started', 
+            value: stats.notStartedWorkOrders, 
+            color: STATUS_COLORS.notStarted,
+            total: totalWorkOrders
+          }
         ]
         
         setData(chartData)
@@ -88,44 +103,13 @@ const WorkOrderStatusChart = () => {
   // Handle export
   const handleExport = () => {
     // Convert chart data to a format suitable for export
-    const exportData = data.map((item: ChartData) => ({
-      Status: item.name,
+    const exportData = data.map((item) => ({
+      Status: item.label,
       Count: item.value
     }))
     
     // Export the data
     exportToExcel(exportData, 'work-order-status')
-  }
-  
-  // Custom label for pie sections
-  const renderCustomizedLabel = (props: any) => {
-    const { cx, cy, midAngle, innerRadius, outerRadius, percent, value } = props
-    
-    if (!cx || !cy || !innerRadius || !outerRadius || !percent) return null
-    
-    const RADIAN = Math.PI / 180
-    const radius = innerRadius + (outerRadius - innerRadius) * 0.5
-    const x = cx + radius * Math.cos(-midAngle * RADIAN)
-    const y = cy + radius * Math.sin(-midAngle * RADIAN)
-    
-    // Calculate total to get a more accurate percentage
-    const total = data.reduce((sum: number, item: ChartData) => sum + item.value, 0)
-    const percentage = total > 0 ? Math.round((value / total) * 100) : 0
-    
-    return (
-      <text 
-        x={x} 
-        y={y} 
-        fill="white" 
-        textAnchor="middle"
-        dominantBaseline="central"
-        fontSize="14"
-        fontWeight="bold"
-        style={{ textShadow: "1px 1px 1px rgba(0,0,0,0.5)" }}
-      >
-        {`${percentage}%`}
-      </text>
-    )
   }
   
   // Show loading skeleton if data is not yet available
@@ -167,57 +151,82 @@ const WorkOrderStatusChart = () => {
   
   return (
     <Card>
-      <CardHeader className="flex flex-row items-start justify-between pb-0">
+      <CardHeader className="flex flex-col space-y-3 sm:flex-row sm:items-start sm:justify-between sm:space-y-0 pb-0">
         <div>
           <CardTitle>Work Order Status</CardTitle>
           <CardDescription className="mb-2">Distribution by completion status</CardDescription>
           
           {/* Custom legend similar to MonthlyProgressChart */}
-          <div className="flex items-center gap-4 mt-1">
-            {data.map((item: ChartData) => (
-              <div key={item.name} className="flex items-center">
+          <div className="flex flex-wrap items-center gap-4 mt-1 mb-2 sm:mb-0">
+            {data.map((item) => (
+              <div key={item.id} className="flex items-center">
                 <div 
                   className="w-3 h-3 rounded-full mr-2" 
                   style={{ backgroundColor: item.color }}
                 ></div>
-                <span className="text-xs font-medium">{item.name}</span>
+                <span className="text-xs font-medium">{item.label}</span>
               </div>
             ))}
           </div>
         </div>
-        <DateRangeFilter 
-          onFilterChange={handleFilterChange}
-          onExport={handleExport}
-        />
+        <div className="w-full sm:w-auto">
+          <DateRangeFilter 
+            onFilterChange={handleFilterChange}
+            onExport={handleExport}
+          />
+        </div>
       </CardHeader>
       <CardContent className="p-0 mt-3">
-        <div className="h-80 w-full">
-          {/* @ts-ignore - Suppressing TypeScript errors for recharts components */}
-          <ResponsiveContainer width="100%" height="100%">
-            <PieChart>
-              <Pie
-                data={data}
-                cx="50%"
-                cy="50%"
-                labelLine={false}
-                label={renderCustomizedLabel}
-                outerRadius={120}
-                fill="#8884d8"
-                dataKey="value"
-                isAnimationActive={true}
-                paddingAngle={1}
-              >
-                {data.map((entry: ChartData) => (
-                  <Cell key={`cell-${entry.name}`} fill={entry.color} />
-                ))}
-              </Pie>
-              <Tooltip 
-                formatter={(value: number, name: string) => {
-                  return [`${value} orders`, name]
-                }}
-              />
-            </PieChart>
-          </ResponsiveContainer>
+        <div className="h-80 w-full overflow-hidden">
+          {/* Nivo Pie Chart */}
+          <ResponsivePie
+            data={data}
+            margin={{ top: 10, right: 10, bottom: 10, left: 10 }}
+            innerRadius={0.3}
+            padAngle={0.7}
+            cornerRadius={3}
+            activeOuterRadiusOffset={8}
+            colors={{ datum: 'data.color' }}
+            borderWidth={1}
+            borderColor={{ from: 'color', modifiers: [['darker', 0.2]] }}
+            arcLabelsSkipAngle={10}
+            arcLabelsTextColor="white"
+            arcLabelsRadiusOffset={0.55}
+            // Display percentages on pie slices
+            arcLabel={d => {
+              // Calculate percentage using the total stored in each data item
+              const percentage = d.data.total > 0 
+                ? Math.floor((d.value / d.data.total) * 100) 
+                : 0
+              return `${percentage}%`
+            }}
+            enableArcLinkLabels={false}
+            // Custom tooltip
+            tooltip={({datum}) => (
+              <div style={{
+                background: 'white',
+                padding: '8px 12px',
+                border: '1px solid #ccc',
+                borderRadius: '4px',
+                boxShadow: '0 1px 2px rgba(0,0,0,0.25)'
+              }}>
+                <strong style={{ textTransform: 'capitalize' }}>{datum.label}</strong>: {datum.value} orders
+                <div>
+                  <strong>{Math.floor((datum.value / datum.data.total) * 100)}%</strong> of total allotted
+                </div>
+              </div>
+            )}
+            theme={{
+              labels: {
+                text: {
+                  fontSize: 14,
+                  fontWeight: 700,
+                  textShadow: '0 1px 2px rgba(0,0,0,0.6)'
+                }
+              }
+            }}
+            legends={[]}
+          />
         </div>
       </CardContent>
     </Card>
