@@ -1,6 +1,7 @@
 "use client"
 
 import * as React from 'react'
+// @ts-ignore - Suppressing TypeScript errors for recharts imports
 import { 
   PieChart, 
   Pie, 
@@ -87,7 +88,7 @@ const WorkOrderStatusChart = () => {
   // Handle export
   const handleExport = () => {
     // Convert chart data to a format suitable for export
-    const exportData = data.map(item => ({
+    const exportData = data.map((item: ChartData) => ({
       Status: item.name,
       Count: item.value
     }))
@@ -108,7 +109,7 @@ const WorkOrderStatusChart = () => {
     const y = cy + radius * Math.sin(-midAngle * RADIAN)
     
     // Calculate total to get a more accurate percentage
-    const total = data.reduce((sum, item) => sum + item.value, 0)
+    const total = data.reduce((sum: number, item: ChartData) => sum + item.value, 0)
     const percentage = total > 0 ? Math.round((value / total) * 100) : 0
     
     return (
@@ -173,7 +174,7 @@ const WorkOrderStatusChart = () => {
           
           {/* Custom legend similar to MonthlyProgressChart */}
           <div className="flex items-center gap-4 mt-1">
-            {data.map(item => (
+            {data.map((item: ChartData) => (
               <div key={item.name} className="flex items-center">
                 <div 
                   className="w-3 h-3 rounded-full mr-2" 
@@ -191,6 +192,7 @@ const WorkOrderStatusChart = () => {
       </CardHeader>
       <CardContent className="p-0 mt-3">
         <div className="h-80 w-full">
+          {/* @ts-ignore - Suppressing TypeScript errors for recharts components */}
           <ResponsiveContainer width="100%" height="100%">
             <PieChart>
               <Pie
@@ -205,12 +207,12 @@ const WorkOrderStatusChart = () => {
                 isAnimationActive={true}
                 paddingAngle={1}
               >
-                {data.map((entry) => (
+                {data.map((entry: ChartData) => (
                   <Cell key={`cell-${entry.name}`} fill={entry.color} />
                 ))}
               </Pie>
               <Tooltip 
-                formatter={(value: any, name: any) => {
+                formatter={(value: number, name: string) => {
                   return [`${value} orders`, name]
                 }}
               />

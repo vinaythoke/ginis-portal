@@ -95,7 +95,7 @@ const RegionPerformanceChart = () => {
   // Handle export
   const handleExport = () => {
     // Convert chart data to a format suitable for export
-    const exportData = data.map(item => ({
+    const exportData = data.map((item: RegionPerformanceData) => ({
       Region: item.regionName,
       Completed: item.completed,
       InProgress: item.inProgress,
@@ -228,17 +228,17 @@ const RegionPerformanceChart = () => {
                 'markers',
                 'legends',
                 'annotations',
-                ({ bars }) => {
+                ({ bars }: { bars: any[] }) => {
                   return (
                     <g>
                       {bars
-                        .filter(bar => {
+                        .filter((bar: any) => {
                           const isTopBar = bars.filter(
-                            b => b.data.indexValue === bar.data.indexValue
-                          ).reduce((max, b) => Math.max(max, b.y), 0) === bar.y;
+                            (b: any) => b.data.indexValue === bar.data.indexValue
+                          ).reduce((max: number, b: any) => Math.max(max, b.y), 0) === bar.y;
                           return isTopBar;
                         })
-                        .map(bar => {
+                        .map((bar: any) => {
                           return (
                             <rect
                               key={`${bar.key}-top-rounded`}
@@ -283,30 +283,7 @@ const RegionPerformanceChart = () => {
               role="application"
               ariaLabel="Region performance chart"
               barAriaLabel={e => `${e.indexValue}: ${e.formattedValue} work orders (${e.id})`}
-              tooltip={point => (
-                <div className="bg-white p-2 shadow rounded border text-xs">
-                  <strong className="block mb-1">
-                    {(point.data.regionName === "Pimpri-Chinchwad Taluka" ? "PCMC" : point.data.regionName) || point.indexValue}
-                  </strong>
-                  <div className="space-y-1">
-                    <div className="flex items-center">
-                      <div className="w-3 h-3 rounded-full mr-2" style={{ backgroundColor: colors.completed }}></div>
-                      <span>Completed: {point.data.completed}</span>
-                    </div>
-                    <div className="flex items-center">
-                      <div className="w-3 h-3 rounded-full mr-2" style={{ backgroundColor: colors.inProgress }}></div>
-                      <span>In Progress: {point.data.inProgress}</span>
-                    </div>
-                    <div className="flex items-center">
-                      <div className="w-3 h-3 rounded-full mr-2" style={{ backgroundColor: colors.notStarted }}></div>
-                      <span>Not Started: {point.data.notStarted}</span>
-                    </div>
-                    <div className="font-medium mt-1 pt-1 border-t border-gray-100">
-                      Total: {point.data.total}
-                    </div>
-                  </div>
-                </div>
-              )}
+              tooltip={customTooltip}
               theme={{
                 axis: {
                   ticks: {
