@@ -1,6 +1,6 @@
 "use client"
 
-import { useEffect, useState } from 'react'
+import * as React from 'react'
 import { ResponsiveLine } from '@nivo/line'
 import { format, subDays, eachDayOfInterval, startOfWeek, endOfWeek, eachWeekOfInterval, startOfMonth, endOfMonth } from 'date-fns'
 
@@ -54,28 +54,28 @@ type NivoDataSeries = {
  */
 const MonthlyProgressChart = () => {
   // State for raw data (original format)
-  const [rawData, setRawData] = useState<MonthlyProgressItem[]>([])
+  const [rawData, setRawData] = React.useState([])
   
   // State for processed display data (based on the filter)
-  const [displayData, setDisplayData] = useState<MonthlyProgressItem[]>([])
+  const [displayData, setDisplayData] = React.useState([])
   
   // State for nivo formatted data
-  const [nivoData, setNivoData] = useState<NivoDataSeries[]>([])
+  const [nivoData, setNivoData] = React.useState([])
   
   // State for loading
-  const [loading, setLoading] = useState<boolean>(true)
+  const [loading, setLoading] = React.useState(true)
   
   // State for current filter
-  const [currentFilter, setCurrentFilter] = useState<DateFilterType>('all')
+  const [currentFilter, setCurrentFilter] = React.useState('all')
   
-  // State for custom date range
-  const [dateRange, setDateRange] = useState<{ from: Date; to: Date } | undefined>(undefined)
+  // State for date range (for custom filter)
+  const [dateRange, setDateRange] = React.useState(undefined)
   
-  // State for total completed value (for display)
-  const [totalCompleted, setTotalCompleted] = useState<number>(0)
+  // State for total completed work orders
+  const [totalCompleted, setTotalCompleted] = React.useState(0)
   
   // Process the raw data based on filter type
-  useEffect(() => {
+  React.useEffect(() => {
     if (rawData.length === 0) return;
     
     // Final data to display after processing
@@ -151,7 +151,7 @@ const MonthlyProgressChart = () => {
   }, [rawData, currentFilter, dateRange]);
   
   // Convert display data to nivo format when it changes
-  useEffect(() => {
+  React.useEffect(() => {
     if (displayData.length > 0) {
       // Show both Allotted and Completed lines
       const formattedData: NivoDataSeries[] = [
@@ -175,7 +175,7 @@ const MonthlyProgressChart = () => {
   }, [displayData])
   
   // Fetch monthly progress data
-  useEffect(() => {
+  React.useEffect(() => {
     const fetchData = () => {
       setLoading(true)
       try {
