@@ -1,7 +1,7 @@
 "use client"
 
 import * as React from 'react'
-import { ResponsiveLine } from '@nivo/line'
+import { ResponsiveLine as NivoResponsiveLine } from '@nivo/line'
 import { format, subDays, eachDayOfInterval, startOfWeek, endOfWeek, eachWeekOfInterval, startOfMonth, endOfMonth } from 'date-fns'
 
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card'
@@ -94,7 +94,7 @@ const MonthlyProgressChart = () => {
         const dayStr = format(day, 'dd MMM'); // e.g., "01 Mar"
         
         // Find corresponding data or use zero values
-        const dayData = rawData.find(d => d.name === format(day, 'MMM')) || { name: dayStr, allotted: 0, completed: 0 };
+        const dayData = rawData.find((d: MonthlyProgressItem) => d.name === format(day, 'MMM')) || { name: dayStr, allotted: 0, completed: 0 };
         
         // For demonstration, divide monthly data by approximate days in month to get daily values
         // In a real app, you would have actual daily data
@@ -123,7 +123,7 @@ const MonthlyProgressChart = () => {
         
         // Find all months this week spans (usually just one)
         const month = format(weekStart, 'MMM');
-        const monthData = rawData.find(d => d.name === month) || { name: month, allotted: 0, completed: 0 };
+        const monthData = rawData.find((d: MonthlyProgressItem) => d.name === month) || { name: month, allotted: 0, completed: 0 };
         
         // For demonstration, divide monthly data by approximate weeks in month
         // In a real app, you would have actual weekly data
@@ -324,7 +324,8 @@ const MonthlyProgressChart = () => {
             </div>
           ) : (
             <div style={{ height: '100%', width: '100%' }}>
-              <ResponsiveLine
+              {/* @ts-ignore - Nivo component typing issue */}
+              <NivoResponsiveLine
                 data={nivoData}
                 margin={{ top: 5, right: 0, bottom: 5, left: 0 }}
                 xScale={{ type: 'point' }}
@@ -340,7 +341,7 @@ const MonthlyProgressChart = () => {
                 axisRight={null}
                 axisBottom={null} // Completely remove x-axis
                 axisLeft={null}
-                colors={({ id }) => colors[id as keyof typeof colors]}
+                colors={({ id }: { id: string }) => colors[id as keyof typeof colors]}
                 lineWidth={3}
                 enablePoints={true}
                 pointSize={0}
@@ -381,11 +382,11 @@ const MonthlyProgressChart = () => {
                 }}
                 animate={true}
                 enableSlices="x"
-                sliceTooltip={({ slice }) => {
+                sliceTooltip={({ slice }: { slice: any }) => {
                   return (
                     <div className="bg-white border border-gray-200 rounded-md shadow-md p-3">
                       <div className="font-semibold text-sm text-gray-600 mb-2">{slice.points[0].data.x}</div>
-                      {slice.points.map(point => (
+                      {slice.points.map((point: any) => (
                         <div 
                           key={point.id} 
                           className="flex items-center my-1"
@@ -393,10 +394,8 @@ const MonthlyProgressChart = () => {
                           <div 
                             className="w-3 h-3 rounded-full mr-2" 
                             style={{ backgroundColor: point.serieColor }}
-                          />
-                          <div className="font-medium" style={{ color: point.serieColor }}>
-                            {point.serieId}: {point.data.y}
-                          </div>
+                          /> 
+                          <span className="text-sm">{point.serieId}: <strong>{point.data.y}</strong></span>
                         </div>
                       ))}
                     </div>
