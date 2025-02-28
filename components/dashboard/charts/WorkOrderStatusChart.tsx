@@ -22,6 +22,14 @@ interface ChartData {
   color: string;
 }
 
+// Colors for different status types - using standard color conventions - moved outside component
+// Green for completed, yellow/amber for in-progress, red for not-started
+const STATUS_COLORS = {
+  completed: '#22c55e', // bright green
+  inProgress: '#f59e0b', // amber/yellow
+  notStarted: '#ef4444'  // red
+}
+
 /**
  * WorkOrderStatusChart component
  * 
@@ -40,14 +48,6 @@ const WorkOrderStatusChart = () => {
   
   // State for custom date range
   const [dateRange, setDateRange] = React.useState(undefined)
-  
-  // Colors for different status types - using standard color conventions:
-  // Green for completed, yellow/amber for in-progress, red for not-started
-  const STATUS_COLORS = {
-    completed: '#22c55e', // bright green
-    inProgress: '#f59e0b', // amber/yellow
-    notStarted: '#ef4444'  // red
-  }
   
   // Fetch work order status data
   React.useEffect(() => {

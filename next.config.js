@@ -18,10 +18,9 @@ const nextConfig = {
     ignoreDuringBuilds: true,
   },
   
-  // Enable experimental features for performance
+  // Disable experimental features that might cause issues
   experimental: {
-    // Faster CSS optimization
-    optimizeCss: true
+    // Removed optimizeCss which requires critters
   },
 };
 

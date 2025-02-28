@@ -13,6 +13,7 @@ export const metadata: Metadata = {
   authors: [{ name: 'District Planning Commission of Pune District' }],
   creator: 'District Planning Commission of Pune District',
   publisher: 'District Planning Commission of Pune District',
+  metadataBase: new URL('https://ginis-portal.vercel.app'),
   alternates: {},
   openGraph: {
     title: 'GINIS Portal',

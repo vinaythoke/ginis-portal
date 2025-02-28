@@ -582,11 +582,11 @@ const WorkOrdersTable = () => {
                 <h4 className="text-sm font-medium text-muted-foreground">Downloads</h4>
                 <div className="grid grid-cols-3 gap-2">
                   <Button size="sm" variant="outline" className="flex items-center justify-center">
-                    <Image className="mr-2 h-4 w-4" />
+                    <Image className="mr-2 h-4 w-4" alt="Photo 1 thumbnail" />
                     Photo 1
                   </Button>
                   <Button size="sm" variant="outline" className="flex items-center justify-center">
-                    <Image className="mr-2 h-4 w-4" />
+                    <Image className="mr-2 h-4 w-4" alt="Photo 2 thumbnail" />
                     Photo 2
                   </Button>
                   <Button size="sm" variant="outline" className="flex items-center justify-center">
