@@ -1,6 +1,6 @@
 "use client"
 
-import { useEffect, useState } from 'react'
+import * as React from 'react'
 import { ResponsiveBar } from '@nivo/bar'
 import { format } from 'date-fns'
 
@@ -28,19 +28,19 @@ interface RegionPerformanceData {
  */
 const RegionPerformanceChart = () => {
   // State for chart data
-  const [data, setData] = useState<RegionPerformanceData[]>([])
+  const [data, setData] = React.useState([])
   
   // State for loading
-  const [loading, setLoading] = useState(true)
+  const [loading, setLoading] = React.useState(true)
   
   // State for current filter
-  const [currentFilter, setCurrentFilter] = useState<DateFilterType>('all')
+  const [currentFilter, setCurrentFilter] = React.useState('all')
   
   // State for custom date range
-  const [dateRange, setDateRange] = useState<{ from: Date; to: Date } | undefined>(undefined)
+  const [dateRange, setDateRange] = React.useState(undefined)
   
   // Fetch region performance data
-  useEffect(() => {
+  React.useEffect(() => {
     const fetchData = () => {
       setLoading(true)
       try {

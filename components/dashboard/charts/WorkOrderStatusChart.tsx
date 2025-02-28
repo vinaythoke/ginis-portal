@@ -1,6 +1,6 @@
 "use client"
 
-import { useEffect, useState } from 'react'
+import * as React from 'react'
 import { 
   PieChart, 
   Pie, 
@@ -29,16 +29,16 @@ interface ChartData {
  */
 const WorkOrderStatusChart = () => {
   // State for chart data
-  const [data, setData] = useState<ChartData[]>([])
+  const [data, setData] = React.useState([])
   
   // State for loading
-  const [loading, setLoading] = useState(true)
+  const [loading, setLoading] = React.useState(true)
   
   // State for current filter
-  const [currentFilter, setCurrentFilter] = useState<DateFilterType>('all')
+  const [currentFilter, setCurrentFilter] = React.useState('all')
   
   // State for custom date range
-  const [dateRange, setDateRange] = useState<{ from: Date; to: Date } | undefined>(undefined)
+  const [dateRange, setDateRange] = React.useState(undefined)
   
   // Colors for different status types - using standard color conventions:
   // Green for completed, yellow/amber for in-progress, red for not-started
@@ -49,7 +49,7 @@ const WorkOrderStatusChart = () => {
   }
   
   // Fetch work order status data
-  useEffect(() => {
+  React.useEffect(() => {
     const fetchData = async () => {
       setLoading(true)
       try {
