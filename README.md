@@ -2,6 +2,10 @@
 
 A modern dashboard for managing work orders in the GIS portal. Built with Next.js and ShadCN UI components.
 
+## Dashboard Preview
+
+![GINIS Portal Dashboard Preview](public/dashboard-preview.png)
+
 ## Features
 
 - 📊 Interactive work orders dashboard
